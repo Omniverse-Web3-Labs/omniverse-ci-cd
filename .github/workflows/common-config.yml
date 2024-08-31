@@ -1,0 +1,21 @@
+name: Common Config
+
+on:
+  workflow_call:
+  # Map the workflow outputs to job outputs
+    outputs:
+      repo-list:
+        description: "The repo list"
+        value: ${{ jobs.prepare.outputs.repo-list }}
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      repo-list: ${{ steps.set-repo-list.outputs.repo-list }}
+    steps:
+      - name: Set repository list
+        id: set-repo-list
+        run: |
+          echo '["aa-transformer-lib", "omniverse-aa-signer", "omniverse-beacon", "omniverse-da", "omniverse-da-submitter", "omniverse-service", "omniverse-services-deployer", "omniverse-synchronizer", "omniverse-transformer", "omniverse-transformer-deployer", "zk-verifier-solidity", "omniverse-server"]' > json_output.txt
+          echo "repo-list=$(cat json_output.txt)" >> $GITHUB_OUTPUT

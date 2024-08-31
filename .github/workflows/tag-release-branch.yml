@@ -1,0 +1,74 @@
+name: Tag Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: 'Release branch name (e.g., release/v1.0)'
+        required: true
+        type: string
+      tag:
+        description: 'Tag name (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  call-common-config:
+    uses: Omniverse-Web3-Labs/omniverse-ci-cd/.github/workflows/common-config.yml@main
+    
+  tag_release_branch:
+    needs: call-common-config
+  
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        repo: ${{ fromJson(needs.call-common-config.outputs.repo-list) }}
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run tag_release_branch script
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          #!/bin/bash
+
+          # Release 分支名称
+          release_branch="${{ github.event.inputs.release_branch }}"
+          tag="${{ github.event.inputs.tag }}"
+
+          echo "Processing ${{ matrix.repo }}..."
+
+          # 克隆仓库
+          git clone https://$GH_PAT@github.com/Omniverse-Web3-Labs/${{ matrix.repo }}.git
+          cd ${{ matrix.repo }}
+
+          # 切换到 release 分支并拉取最新更改
+          git checkout $release_branch
+          git pull origin $release_branch
+
+          # 打标签
+          git tag $tag
+
+          # 推送标签到远程
+          git push origin $tag
+
+          # 返回管理仓库目录
+          cd ..
+
+          # 删除本地克隆
+          rm -rf ${{ matrix.repo }}
+
+          echo "${{ matrix.repo }} tagged with '$tag'."
