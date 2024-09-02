@@ -1,0 +1,23 @@
+name: Reusable bugfix workflow
+
+on:
+  workflow_call:
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}   # 当前推送的 release 分支
+
+    - name: Create Pull Request
+      uses: repo-sync/pull-request@v2
+      with:
+        destination_branch: main   # 目标分支
+        source_branch: ${{ github.ref_name }}   # 源分支，即当前的 release 分支
+        pr_title: 'Auto PR: Update main with changes from ${{ github.ref_name }}'
+        pr_body: 'This PR updates the main branch with the latest changes from ${{ github.ref_name }}.'
+        github_token: ${{ secrets.GITHUB_TOKEN }}  # 使用默认的 GitHub Token
