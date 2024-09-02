@@ -1,0 +1,39 @@
+# .github/workflows/reusable-release.yml
+name: Reusable Release Workflow
+
+on:
+  workflow_call:  # 标记该工作流为可复用
+    inputs:
+      tag_name:
+        description: 'The tag name for the release'
+        required: true
+        type: string
+      prerelease:
+        description: 'Is this a prerelease?'
+        required: true
+        type: boolean
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Draft release notes
+      uses: release-drafter/release-drafter@v5
+      with:
+        tag: ${{ inputs.tag_name }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ inputs.tag_name }}
+        release_name: Release ${{ inputs.tag_name }}
+        draft: false
+        prerelease: ${{ inputs.prerelease }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
