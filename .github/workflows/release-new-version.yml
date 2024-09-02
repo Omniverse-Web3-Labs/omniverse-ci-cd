@@ -1,0 +1,41 @@
+# 管理仓库中的工作流 .github/workflows/manage_release.yml
+name: Release new version
+
+on:
+  workflow_dispatch:  # 手动触发
+    inputs:
+      tag_name:
+        description: 'The tag name for the release'
+        required: true
+        type: string
+      prerelease:
+        description: 'Is this a prerelease?'
+        required: false
+        default: false
+
+jobs:
+  call-common-config:
+    uses: Omniverse-Web3-Labs/omniverse-ci-cd/.github/workflows/common-config.yml@main
+    
+  trigger_sub_repos:
+    needs: call-common-config
+    
+    strategy:
+      matrix:
+        repo: ${{ fromJson(needs.call-common-config.outputs.repo-list) }}
+      
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Release in Sub-Repositories
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/MeerkatKing/${{matrix.repo}}/actions/workflows/on-pr.yml/dispatches
+          ref: main
+          inputs: |
+            {
+              "tag_name": ${{inputs.tag_name}},
+              "prerelease": ${{inputs.prerelease}}
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
