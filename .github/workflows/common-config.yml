@@ -17,5 +17,5 @@ jobs:
       - name: Set repository list
         id: set-repo-list
         run: |
-          echo '["aa-transformer-lib", "omniverse-aa-signer", "omniverse-beacon", "omniverse-da", "omniverse-da-submitter", "omniverse-service", "omniverse-services-deployer", "omniverse-synchronizer", "omniverse-transformer", "omniverse-transformer-deployer", "zk-verifier-solidity", "omniverse-server"]' > json_output.txt
+          echo '["omniverse-aa-lib", "omniverse-aa-signer", "omniverse-beacon", "omniverse-da", "omniverse-da-submitter", "omniverse-service", "omniverse-services-deployer", "omniverse-synchronizer", "omniverse-transformer", "omniverse-transformer-deployer", "zk-verifier-solidity", "omniverse-server"]' > json_output.txt
           echo "repo-list=$(cat json_output.txt)" >> $GITHUB_OUTPUT

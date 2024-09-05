@@ -27,6 +27,12 @@ jobs:
         tag: ${{ inputs.tag_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: env.ACT != 'true'
+
+    - name: Simulating release notes
+      run: |
+        echo 'tag_name: ${{ inputs.tag_name }}'
+      if: env.ACT == 'true'
 
     - name: Create Release
       uses: actions/create-release@v1
@@ -37,3 +43,12 @@ jobs:
         prerelease: ${{ inputs.prerelease }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: env.ACT != 'true'
+
+    - name: Simulating Release
+      run: |
+        echo 'tag_name: ${{ inputs.tag_name }}'
+        echo 'release_name: Release ${{ inputs.tag_name }}'
+        echo 'draft: false'
+        echo 'prerelease: ${{ inputs.prerelease }}'
+      if: env.ACT == 'true'

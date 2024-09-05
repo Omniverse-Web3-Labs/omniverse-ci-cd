@@ -21,3 +21,12 @@ jobs:
         pr_title: 'Auto PR: Update main with changes from ${{ github.ref_name }}'
         pr_body: 'This PR updates the main branch with the latest changes from ${{ github.ref_name }}.'
         github_token: ${{ secrets.GITHUB_TOKEN }}  # 使用默认的 GitHub Token
+      if: env.ACT != 'true'
+
+    - name: Simulating Pull Request
+      run: |
+        echo 'destination_branch: main'
+        echo 'source_branch: ${{ github.ref_name }}'
+        echo 'pr_title: Auto PR: Update main with changes from ${{ github.ref_name }}'
+        echo 'pr_body: This PR updates the main branch with the latest changes from ${{ github.ref_name }}.'
+      if: env.ACT == 'true'

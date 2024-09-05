@@ -29,17 +29,12 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git
-
       - name: Set up Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Run tag_release_branch script
+      - name: Run Tag Release Branch script
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
@@ -72,3 +67,15 @@ jobs:
           rm -rf ${{ matrix.repo }}
 
           echo "${{ matrix.repo }} tagged with '$tag'."
+        if: env.ACT != 'true'
+
+      - name: Simulating Tag Release Branch
+        run: |
+          # Release 分支名称
+          release_branch="${{ github.event.inputs.release_branch }}"
+          tag="${{ github.event.inputs.tag }}"
+
+          echo "Processing ${{ matrix.repo }}..."
+
+          echo "${{ matrix.repo }} tagged with '$tag'."
+        if: env.ACT == 'true'

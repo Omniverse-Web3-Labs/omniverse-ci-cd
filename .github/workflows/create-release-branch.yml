@@ -25,11 +25,6 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git
-
       - name: Set up Git
         run: |
           git config --global user.name "github-actions[bot]"
@@ -67,3 +62,14 @@ jobs:
           rm -rf ${{ matrix.repo }}
 
           echo "${{ matrix.repo }} release branch '$release_branch' created."
+        if: env.ACT != 'true'
+
+      - name: Simulating create_release_branch
+        run: |
+          # Release 分支名称
+          release_branch="${{ github.event.inputs.release_branch }}"
+
+          echo "Processing ${{ matrix.repo }}..."
+
+          echo "${{ matrix.repo }} release branch '$release_branch' created."
+        if: env.ACT == 'true'

@@ -30,7 +30,7 @@ jobs:
       - name: Trigger Release in Sub-Repositories
         uses: octokit/request-action@v2.x
         with:
-          route: POST /repos/MeerkatKing/${{matrix.repo}}/actions/workflows/on-pr.yml/dispatches
+          route: POST /repos/Omniverse-Web3-Labs/${{matrix.repo}}/actions/workflows/release.yml/dispatches
           ref: main
           inputs: |
             {
@@ -39,3 +39,10 @@ jobs:
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        if: env.ACT != 'true'
+
+      - name: Simulating Trigger Release in Sub-Repositories
+        run: |
+          echo 'ref: main'
+          echo 'route: POST /repos/Omniverse-Web3-Labs/${{matrix.repo}}/actions/workflows/release.yml/dispatches'
+        if: env.ACT == 'true'
